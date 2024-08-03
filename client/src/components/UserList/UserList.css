@@ -1,0 +1,26 @@
+.breadcrumb {
+  margin-bottom: 16px;
+}
+
+.space-container {
+  margin-bottom: 16px;
+  width: 100%;
+  justify-content: space-between;
+}
+
+.search-input {
+  width: 240px;
+}
+
+.select-input {
+  width: 200px;
+}
+
+.addUserButton {
+  padding: 17px;
+}
+
+.ant-table {
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+
+}
