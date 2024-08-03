@@ -6,10 +6,13 @@ import {
   updateUser,
 } from "../../services/userService";
 
-export const fetchUsers = createAsyncThunk("users/fetchUsers", async () => {
-  const response = await getUsers();
-  return response;
-});
+export const fetchUsers = createAsyncThunk(
+  "users/fetchUsers",
+  async ({ search, status } = {}) => {
+    const response = await getUsers({ search, status });
+    return response;
+  }
+);
 
 export const addUser = createAsyncThunk("users/addUser", async (user) => {
   const response = await createUser(user);

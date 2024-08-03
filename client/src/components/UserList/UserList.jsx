@@ -13,8 +13,8 @@ import {
 import { ExclamationCircleOutlined } from "@ant-design/icons";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchUsers, removeUser } from "../../features/users/userSlice";
-import Loader from "../Loader";
-import UserModal from "../UserModal";
+import Loader from "../Loader/Loader";
+import UserModal from "../UserModal/UserModal";
 import "./UserList.css";
 
 const { Search } = Input;
@@ -24,12 +24,14 @@ const { confirm } = Modal;
 const UserList = () => {
   const dispatch = useDispatch();
   const { users, loading } = useSelector((state) => state.users);
-  const [modalVisible, setModalVisible] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filterStatus, setFilterStatus] = useState("");
 
   useEffect(() => {
-    dispatch(fetchUsers());
-  }, [dispatch]);
+    dispatch(fetchUsers({ search: searchTerm, status: filterStatus }));
+  }, [dispatch, filterStatus]);
 
   const handleDelete = (id) => {
     confirm({
@@ -42,20 +44,22 @@ const UserList = () => {
   };
 
   const handleSearch = (value) => {
-    dispatch(fetchUsers(value));
+    setSearchTerm(value);
+    dispatch(fetchUsers({ search: value, status: filterStatus }));
   };
 
   const handleFilter = (value) => {
-    dispatch(fetchUsers(value));
+    setFilterStatus(value);
+    dispatch(fetchUsers({ search: searchTerm, status: value }));
   };
 
   const handleModalOpen = (userId = null) => {
     setSelectedUserId(userId);
-    setModalVisible(true);
+    setModalOpen(true);
   };
 
   const handleModalClose = () => {
-    setModalVisible(false);
+    setModalOpen(false);
     setSelectedUserId(null);
   };
 
@@ -94,46 +98,36 @@ const UserList = () => {
   const components = {
     header: {
       cell: ({ children, ...restProps }) => (
-        <th
-          {...restProps}
-          style={{
-            backgroundColor: "rgb(217 217 217 / 39%)",
-            fontWeight: "bold",
-          }}
-        >
+        <th id="firstRowTable" {...restProps}>
           {children}
         </th>
       ),
     },
   };
 
-  if (loading) return <Loader />;
-
   return (
     <ConfigProvider>
-      <Breadcrumb className="breadcrumb">
-        <Breadcrumb.Item>Usuarios</Breadcrumb.Item>
-        <Breadcrumb.Item>Listado de usuarios</Breadcrumb.Item>
-      </Breadcrumb>
-      <Space
-        className="space-container"
-        style={{
-          marginBottom: 16,
-          width: "100%",
-          justifyContent: "space-between",
-        }}
-      >
+      <Breadcrumb
+        className="breadcrumb"
+        items={[{ title: "Usuarios" }, { title: "Listado de usuarios" }]}
+      />
+      <Space className="space-container">
         <Space size="middle">
           <Search
             placeholder="Buscar usuarios"
             onSearch={handleSearch}
+            value={searchTerm}
+            allowClear
+            onChange={(e) => setSearchTerm(e.target.value)}
             className="search-input"
           />
           <Select
             placeholder="Filtrar por estado"
             onChange={handleFilter}
+            value={filterStatus || undefined}
             className="select-input"
           >
+            <Option value="">Todos</Option>
             <Option value="active">Activo</Option>
             <Option value="inactive">Inactivo</Option>
           </Select>
@@ -142,22 +136,26 @@ const UserList = () => {
           className="addUserButton"
           type="primary"
           onClick={() => handleModalOpen()}
-          style={{ paddingTop: "10px", paddingBottom: "10px" }}
         >
           Agregar usuario
         </Button>
       </Space>
-      <Table
-        className="table"
-        dataSource={users}
-        columns={columns}
-        rowKey="id"
-        pagination={{ pageSize: 9 }}
-        components={components}
-        style={{ width: "100%" }}
-      />
+
+      {loading ? (
+        <Loader />
+      ) : (
+        <Table
+          className="table"
+          dataSource={users}
+          columns={columns}
+          rowKey="id"
+          pagination={{ pageSize: 9 }}
+          components={components}
+        />
+      )}
+
       <UserModal
-        visible={modalVisible}
+        open={modalOpen}
         onClose={handleModalClose}
         userId={selectedUserId}
       />
