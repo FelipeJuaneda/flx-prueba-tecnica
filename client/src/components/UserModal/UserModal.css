@@ -1,0 +1,28 @@
+.formContent {
+  padding-top: 20px;
+}
+
+.buttonSubmitContent {
+  padding-top: 20px;
+  margin: 0;
+  display: flex;
+  justify-content: flex-end;
+}
+
+@media (max-width: 768px) {
+  .user-modal .ant-row {
+    flex-direction: column;
+  }
+
+  .user-modal .ant-col {
+    width: 100% !important;
+  }
+
+  .user-modal .ant-form-item {
+    width: 100%;
+  }
+
+  .user-modal .buttonSubmitContent {
+    justify-content: flex-end;
+  }
+}

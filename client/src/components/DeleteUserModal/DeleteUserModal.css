@@ -1,0 +1,24 @@
+.delete-user-modal .modal-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100px;
+}
+
+.delete-user-modal .modal-text {
+  margin: 22px 0;
+  text-align: center;
+}
+
+.delete-user-modal .modal-footer {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+@media (max-width: 570px) {
+  .delete-user-modal .modal-body{
+    height: 130px;
+  }
+
+}

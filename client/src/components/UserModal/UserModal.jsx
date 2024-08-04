@@ -37,11 +37,18 @@ const UserModal = ({ open, onClose, userId }) => {
       onCancel={onClose}
       footer={null}
       forceRender
+      width={600}
       className="user-modal"
     >
-      <Form form={form} onFinish={handleFinish} layout="vertical">
+      <Form
+        className="formContent"
+        form={form}
+        onFinish={handleFinish}
+        layout="vertical"
+        requiredMark={false}
+      >
         <Row gutter={16}>
-          <Col span={12}>
+          <Col xs={24} sm={24} md={12}>
             <Form.Item
               name="username"
               label="Usuario"
@@ -52,7 +59,7 @@ const UserModal = ({ open, onClose, userId }) => {
               <Input placeholder="johndoe" />
             </Form.Item>
           </Col>
-          <Col span={12}>
+          <Col xs={24} sm={24} md={12}>
             <Form.Item
               name="email"
               label="Email"
@@ -65,7 +72,7 @@ const UserModal = ({ open, onClose, userId }) => {
           </Col>
         </Row>
         <Row gutter={16}>
-          <Col span={12}>
+          <Col xs={24} sm={24} md={12}>
             <Form.Item
               name="name"
               label="Nombre"
@@ -76,7 +83,7 @@ const UserModal = ({ open, onClose, userId }) => {
               <Input placeholder="John" />
             </Form.Item>
           </Col>
-          <Col span={12}>
+          <Col xs={24} sm={24} md={12}>
             <Form.Item
               name="lastname"
               label="Apellido"
@@ -89,7 +96,7 @@ const UserModal = ({ open, onClose, userId }) => {
           </Col>
         </Row>
         <Row gutter={16}>
-          <Col span={12}>
+          <Col xs={24} sm={24} md={12}>
             <Form.Item
               name="status"
               label="Estado"
@@ -103,7 +110,7 @@ const UserModal = ({ open, onClose, userId }) => {
               </Select>
             </Form.Item>
           </Col>
-          <Col span={12}>
+          <Col xs={24} sm={24} md={12}>
             <Form.Item
               name="age"
               label="Edad"
@@ -113,9 +120,14 @@ const UserModal = ({ open, onClose, userId }) => {
             </Form.Item>
           </Col>
         </Row>
-        <Form.Item>
-          <Button type="primary" htmlType="submit" loading={loading}>
-            {userId ? "Actualizar usuario" : "Agregar usuario"}
+        <Form.Item className="buttonSubmitContent">
+          <Button
+            className="buttonSubmit"
+            type="primary"
+            htmlType="submit"
+            loading={loading}
+          >
+            {userId ? "Editar usuario" : "Agregar usuario"}
           </Button>
         </Form.Item>
       </Form>

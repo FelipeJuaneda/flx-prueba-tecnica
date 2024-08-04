@@ -4,7 +4,6 @@ import {
   Button,
   Input,
   Select,
-  Modal,
   Tag,
   Space,
   Breadcrumb,
@@ -16,16 +15,18 @@ import { fetchUsers, removeUser } from "../../features/users/userSlice";
 import Loader from "../Loader/Loader";
 import UserModal from "../UserModal/UserModal";
 import "./UserList.css";
+import DeleteUserModal from "../DeleteUserModal/DeleteUserModal";
 
 const { Search } = Input;
 const { Option } = Select;
-const { confirm } = Modal;
 
 const UserList = () => {
   const dispatch = useDispatch();
   const { users, loading } = useSelector((state) => state.users);
   const [modalOpen, setModalOpen] = useState(false);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState(null);
+  const [selectedUsername, setSelectedUsername] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
 
@@ -33,14 +34,15 @@ const UserList = () => {
     dispatch(fetchUsers({ search: searchTerm, status: filterStatus }));
   }, [dispatch, filterStatus]);
 
-  const handleDelete = (id) => {
-    confirm({
-      title: "¿Estás seguro de que deseas eliminar este usuario?",
-      icon: <ExclamationCircleOutlined />,
-      onOk() {
-        dispatch(removeUser(id));
-      },
-    });
+  const handleDelete = (id, username) => {
+    setSelectedUserId(id);
+    setSelectedUsername(username);
+    setDeleteModalOpen(true);
+  };
+
+  const confirmDelete = () => {
+    dispatch(removeUser(selectedUserId));
+    setDeleteModalOpen(false);
   };
 
   const handleSearch = (value) => {
@@ -87,7 +89,7 @@ const UserList = () => {
           <Button type="link" onClick={() => handleModalOpen(record.id)}>
             Editar
           </Button>
-          <Button type="link" onClick={() => handleDelete(record.id)}>
+          <Button type="link" onClick={() => handleDelete(record.id, record.username)}>
             Eliminar
           </Button>
         </Space>
@@ -151,6 +153,7 @@ const UserList = () => {
           rowKey="id"
           pagination={{ pageSize: 9 }}
           components={components}
+          scroll={{ x: 800 }}
         />
       )}
 
@@ -158,6 +161,12 @@ const UserList = () => {
         open={modalOpen}
         onClose={handleModalClose}
         userId={selectedUserId}
+      />
+      <DeleteUserModal
+        open={deleteModalOpen}
+        onClose={() => setDeleteModalOpen(false)}
+        onConfirm={confirmDelete}
+        username={selectedUsername}
       />
     </ConfigProvider>
   );
