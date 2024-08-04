@@ -13,6 +13,8 @@ const UserModal = ({ open, onClose, userId }) => {
   const loading = useSelector((state) => state.users.loading);
 
   useEffect(() => {
+    // Cuando se selecciona un usuario, los valores del formulario se llenan con los datos del usuario
+    // Si no hay usuario seleccionado, los campos del formulario se resetean
     if (userId) {
       const user = users.find((user) => user.id === userId);
       form.setFieldsValue(user);
@@ -22,6 +24,7 @@ const UserModal = ({ open, onClose, userId }) => {
   }, [userId, users, form]);
 
   const handleFinish = (values) => {
+    // Despacha la acción correspondiente (añadir o editar usuario) según si hay un userId presente
     if (userId) {
       dispatch(editUser({ id: userId, user: values }));
     } else {
@@ -65,6 +68,7 @@ const UserModal = ({ open, onClose, userId }) => {
               label="Email"
               rules={[
                 { required: true, message: "Por favor ingresa el email" },
+                { type: "email", message: "Por favor ingresa un email válido" },
               ]}
             >
               <Input placeholder="johndoe@domain.com" />
@@ -114,9 +118,17 @@ const UserModal = ({ open, onClose, userId }) => {
             <Form.Item
               name="age"
               label="Edad"
-              rules={[{ required: true, message: "Por favor ingresa la edad" }]}
+              rules={[
+                { required: true, message: "Por favor ingresa la edad" },
+                {
+                  validator: (_, value) =>
+                    value >= 0 && value <= 100
+                      ? Promise.resolve()
+                      : Promise.reject("La edad debe estar entre 0 y 100"),
+                },
+              ]}
             >
-              <Input placeholder="43" />
+              <Input type="number" placeholder="43" />
             </Form.Item>
           </Col>
         </Row>

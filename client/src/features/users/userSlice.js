@@ -6,6 +6,7 @@ import {
   updateUser,
 } from "../../services/userService";
 
+// Thunks para realizar solicitudes asíncronas a la API
 export const fetchUsers = createAsyncThunk(
   "users/fetchUsers",
   async ({ search, status } = {}) => {
@@ -32,12 +33,14 @@ export const removeUser = createAsyncThunk("users/removeUser", async (id) => {
   return id;
 });
 
+// Estado inicial del slice
 const initialState = {
   users: [],
   loading: false,
   error: null,
 };
 
+// Definición del slice
 const userSlice = createSlice({
   name: "users",
   initialState,
