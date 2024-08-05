@@ -9,30 +9,33 @@ import {
   Breadcrumb,
   ConfigProvider,
 } from "antd";
-import { ExclamationCircleOutlined } from "@ant-design/icons";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchUsers, removeUser } from "../../features/users/userSlice";
 import Loader from "../Loader/Loader";
 import UserModal from "../UserModal/UserModal";
-import "./UserList.css";
 import DeleteUserModal from "../DeleteUserModal/DeleteUserModal";
-
+import "./UserList.css";
 const { Search } = Input;
 const { Option } = Select;
 
 const UserList = () => {
   const dispatch = useDispatch();
-  const { users, loading } = useSelector((state) => state.users);
+  const { users, loading, total } = useSelector((state) => state.users);
   const [modalOpen, setModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState(null);
   const [selectedUsername, setSelectedUsername] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const limit = 9;
 
   useEffect(() => {
-    dispatch(fetchUsers({ search: searchTerm, status: filterStatus }));
-  }, [dispatch, filterStatus]);
+    const offset = (currentPage - 1) * limit;
+    dispatch(
+      fetchUsers({ search: searchTerm, status: filterStatus, limit, offset })
+    );
+  }, [dispatch, filterStatus, currentPage]);
 
   const handleDelete = (id, username) => {
     setSelectedUserId(id);
@@ -47,12 +50,18 @@ const UserList = () => {
 
   const handleSearch = (value) => {
     setSearchTerm(value);
-    dispatch(fetchUsers({ search: value, status: filterStatus }));
+    setCurrentPage(1);
+    dispatch(
+      fetchUsers({ search: value, status: filterStatus, limit, offset: 0 })
+    );
   };
 
   const handleFilter = (value) => {
     setFilterStatus(value);
-    dispatch(fetchUsers({ search: searchTerm, status: value }));
+    setCurrentPage(1);
+    dispatch(
+      fetchUsers({ search: searchTerm, status: value, limit, offset: 0 })
+    );
   };
 
   const handleModalOpen = (userId = null) => {
@@ -65,7 +74,11 @@ const UserList = () => {
     setSelectedUserId(null);
   };
 
-  const columns = [
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
+  const tableColumns = [
     { title: "Usuario", dataIndex: "username", key: "username", width: "20%" },
     { title: "Nombre", dataIndex: "name", key: "name", width: "20%" },
     { title: "Apellido", dataIndex: "lastname", key: "lastname", width: "20%" },
@@ -89,7 +102,10 @@ const UserList = () => {
           <Button type="link" onClick={() => handleModalOpen(record.id)}>
             Editar
           </Button>
-          <Button type="link" onClick={() => handleDelete(record.id, record.username)}>
+          <Button
+            type="link"
+            onClick={() => handleDelete(record.id, record.username)}
+          >
             Eliminar
           </Button>
         </Space>
@@ -97,7 +113,7 @@ const UserList = () => {
     },
   ];
 
-  const components = {
+  const tableHeader = {
     header: {
       cell: ({ children, ...restProps }) => (
         <th id="firstRowTable" {...restProps}>
@@ -149,10 +165,15 @@ const UserList = () => {
         <Table
           className="table"
           dataSource={users}
-          columns={columns}
+          columns={tableColumns}
           rowKey="id"
-          pagination={{ pageSize: 9 }}
-          components={components}
+          pagination={{
+            current: currentPage,
+            pageSize: limit,
+            total,
+            onChange: handlePageChange,
+          }}
+          components={tableHeader}
           scroll={{ x: 800 }}
         />
       )}

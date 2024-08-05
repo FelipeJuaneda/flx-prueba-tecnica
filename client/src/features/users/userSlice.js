@@ -9,8 +9,8 @@ import {
 // Thunks para realizar solicitudes asíncronas a la API
 export const fetchUsers = createAsyncThunk(
   "users/fetchUsers",
-  async ({ search, status } = {}) => {
-    const response = await getUsers({ search, status });
+  async ({ search, status, limit, offset } = {}) => {
+    const response = await getUsers({ search, status, limit, offset });
     return response;
   }
 );
@@ -36,6 +36,7 @@ export const removeUser = createAsyncThunk("users/removeUser", async (id) => {
 // Estado inicial del slice
 const initialState = {
   users: [],
+  total: 0,
   loading: false,
   error: null,
 };
@@ -52,7 +53,8 @@ const userSlice = createSlice({
       })
       .addCase(fetchUsers.fulfilled, (state, action) => {
         state.loading = false;
-        state.users = action.payload;
+        state.users = action.payload.users;
+        state.total = action.payload.total;
       })
       .addCase(fetchUsers.rejected, (state, action) => {
         state.loading = false;
