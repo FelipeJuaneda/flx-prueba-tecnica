@@ -1,4 +1,5 @@
 import axios from "axios";
+import { v4 as uuidv4 } from "uuid";
 
 const API_URL = "http://localhost:4000/users";
 
@@ -32,14 +33,15 @@ export const getUsers = async ({ search, status, limit, offset } = {}) => {
 
 // Función para crear un nuevo usuario
 export const createUser = async (user) => {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     setTimeout(async () => {
       try {
-        const response = await axios.post(API_URL, user);
+        const newUser = { ...user, id: uuidv4() };
+        const response = await axios.post(API_URL, newUser);
         resolve(response.data);
       } catch (error) {
         console.error("Error creating user:", error);
-        reject(error);
+        throw error;
       }
     }, 500); // Simula 500ms de tiempo de carga
   });
