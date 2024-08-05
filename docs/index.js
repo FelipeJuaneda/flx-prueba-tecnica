@@ -4,7 +4,10 @@
 */
 
 function reverseString(str) {
-  // Tu solución acá  
+  if (typeof str !== "string") {
+    throw new TypeError("Expected a string as input");
+  }
+  return str.split("").reverse().join("");
 }
 
 /*
@@ -13,7 +16,12 @@ function reverseString(str) {
   y devuelva true si la cadena es un palíndromo, y false en caso contrario.
 */
 function isPalindrome(str) {
-  // Tu solución acá
+  if (typeof str !== "string") {
+    throw new TypeError("Expected a string as input");
+  }
+  const cleanedStr = str.replace(/[^A-Za-z0-9]/g, "").toLowerCase();
+  const reversedStr = cleanedStr.split("").reverse().join("");
+  return cleanedStr === reversedStr;
 }
 
 /*
@@ -30,9 +38,25 @@ function isPalindrome(str) {
 */
 
 function closestPair(arr) {
-  // Tu solución acá
-}
+  if (!Array.isArray(arr) || arr.some((num) => typeof num !== "number")) {
+    throw new TypeError("Expected an array of numbers");
+  }
 
+  arr.sort((a, b) => a - b);
+
+  let minDiff = Infinity;
+  let pair = [];
+
+  for (let i = 1; i < arr.length; i++) {
+    const diff = arr[i] - arr[i - 1];
+    if (diff < minDiff) {
+      minDiff = diff;
+      pair = [arr[i - 1], arr[i]];
+    }
+  }
+
+  return pair;
+}
 
 /*
   Ejercicio 4: Calculadora - Programación Orientada a Objetos
@@ -65,14 +89,51 @@ function closestPair(arr) {
   Además, actualiza el último resultado calculado.
 
 */
-
 class Calculator {
-  // Tu solución acá
+  constructor() {
+    this.lastResult = null;
+  }
+
+  add(a, b) {
+    this.lastResult = a + b;
+    return this.lastResult;
+  }
+
+  subtract(a, b) {
+    this.lastResult = a - b;
+    return this.lastResult;
+  }
+
+  multiply(a, b) {
+    this.lastResult = a * b;
+    return this.lastResult;
+  }
+
+  divide(a, b) {
+    if (b === 0) {
+      throw new Error("Division by zero is not allowed");
+    }
+    this.lastResult = a / b;
+    return this.lastResult;
+  }
+
+  getLastResult() {
+    return this.lastResult;
+  }
 }
+
+// Método exponentiate asignado al prototipo de Calculator
+Calculator.prototype.exponentiate = function (base, exponent) {
+  if (exponent < 0) {
+    throw new Error("Exponentiation with negative exponent is not allowed");
+  }
+  this.lastResult = base ** exponent;
+  return this.lastResult;
+};
 
 module.exports = {
   closestPair,
   isPalindrome,
   reverseString,
   Calculator,
-}
+};
